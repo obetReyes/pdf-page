@@ -1,28 +1,21 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useSubmit } from "@remix-run/react";
+import { ActionFunctionArgs, json} from "@remix-run/node";
 import { Loader } from "lucide-react";
 import IPHLayout from "~/components/iph/iphLayout"
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import useLocalStorage from "~/hooks/useLocalStorage";
-import ExcelJS from 'exceljs';
-
-export async function loader() {
-  const workbook = new ExcelJS.Workbook();
-  workbook.xlsx.readFile('file.xlsx')//Change file name here or give file path
-    const report = "hola";
-    const pdf = `xd ${report}`;
-    return new Response(pdf, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-      },
-    });
-  }
-  
+import { PDFDocument } from 'pdf-lib';
+import fs from 'fs';
+import qs from "qs"
+import { useEffect } from "react";
 
   export default function Generador () {
     const [saveForm, setSaveForm] = useLocalStorage("/iph/puesta-a-disposicion");
-
+    useEffect(() => {
+      console.log("saveform", saveForm)
+    },[saveForm])
     if(saveForm == null){
       <Loader/>
     }
@@ -34,22 +27,29 @@ export async function loader() {
         </div>
         
         <section className="gap-2">
-        <Button
+         
+          <form method="post"  encType="application/json">
+                        <input
+    type="hidden"
+    name="json"
+    value={JSON.stringify(saveForm)}
+  />
+          <Button
+          type="submit"
         className="bg-slate-900 text-gray-100 float-right"
          variant="outline"
         >
           Descargar PDF
         </Button>
+          </form>
+       
           <article>
             <div className="flex flex-wrap gap-2">
             <h1 className=" scroll-m-20 text-4xl font-extrabold tracking-tight  lg:text-5xl">
       {saveForm?.names ? saveForm.names : ""}
 
       </h1>
-      <h1 className=" scroll-m-20 text-4xl font-extrabold tracking-tight  lg:text-4xl">
-      {saveForm?.fristsurname ? saveForm.fristsurname : ""}
-      </h1> 
-      <h1 className=" scroll-m-20 text-4xl font-extrabold tracking-tight  lg:text-4xl ">
+      <h1 className=" scroll-m-20 text-4xl font-extrabold tracking-tight  lg:text-4xl">ActionFunctionArgs
       {saveForm?.lastsurname ? saveForm.lastsurname : ""}
       </h1> 
 
@@ -75,3 +75,11 @@ export async function loader() {
   }
   
   
+  export async function action({
+    request,
+  }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    const obj = JSON.parse(formData.get("json") as any);
+    console.log(obj.names)
+    return "hola`"
+  }

@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react"
 import { CleanFieldsBtn } from "./clean-fields-btn"
 import { MenuBar } from "./menu-bar"
 
@@ -19,6 +20,9 @@ export default function IPHLayout({ children }: SettingsLayoutProps) {
         </div>
         <div className="lg:max-w-5xl mx-auto">   
          {typeof window !== 'undefined' && window.localStorage.length > 0   ? <div className="hidden md:block my-2 max-w-sm"><CleanFieldsBtn /></div>: null}
+         {typeof window !== 'undefined' && window.localStorage.length > 0   ? 
+                      <Link  className="py-4 text-center  border text-black text-sm" to="/iph/generador">generador</Link>
+                   : null}
         <MenuBar/>
         </div>
      

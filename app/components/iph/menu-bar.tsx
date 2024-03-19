@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Link } from "@remix-run/react"
+import { Link} from "@remix-run/react"
 import { useMediaQuery } from "~/hooks/useMediaQuery"
 import { Slash } from "lucide-react"
 import {
@@ -126,7 +126,10 @@ export function MenuBar() {
                       ))}
                       {typeof window !== 'undefined' && window.localStorage.length > 0   ? <CleanFieldsBtn setOpen={setOpen} />: null}
                           
-
+                      {typeof window !== 'undefined' && window.localStorage.length > 0   ? 
+                      <Link  className="py-4 text-center  border text-white text-sm" to="/iph/generador">generador</Link>
+                   : null}
+                          
                     </div>
                     <DrawerFooter className="pt-4">
                       <DrawerClose asChild>
