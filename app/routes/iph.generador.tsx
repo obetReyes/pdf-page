@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useSubmit } from "@remix-run/react";
-import { ActionFunctionArgs, json} from "@remix-run/node";
+import { ActionFunctionArgs} from "@remix-run/node";
 import { Loader } from "lucide-react";
 import IPHLayout from "~/components/iph/iphLayout"
 import { Button } from "~/components/ui/button";
@@ -8,7 +7,6 @@ import { Separator } from "~/components/ui/separator";
 import useLocalStorage from "~/hooks/useLocalStorage";
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
-import qs from "qs"
 import { useEffect } from "react";
 
   export default function Generador () {
@@ -74,8 +72,8 @@ import { useEffect } from "react";
     )
   }
   
-  
-  export async function action({
+
+export async function action({
     request,
   }: ActionFunctionArgs) {
     const formData = await request.formData();

@@ -15,7 +15,7 @@ export const CleanFieldsBtn = ({setOpen}:PropsI) => {
         }
        localStorage.clear();
       setFormStorageClean(true)
-      }} variant="link" className=" w-full mt-2 md:mt-0   p-6 text-white bg-gray-900 hover:bg-gray-800">
+      }} variant="link" className=" w-full mt-2 md:mt-0   p-6 text-white bg-red-800 hover:bg-red-700">
       limpiar los datos almacenados
  </Button>
   )

@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react"
 import { CleanFieldsBtn } from "./clean-fields-btn"
 import { MenuBar } from "./menu-bar"
+import { Button } from "../ui/button"
 
 
 
@@ -18,11 +19,14 @@ export default function IPHLayout({ children }: SettingsLayoutProps) {
             llena  las secciones del  formulario para generar un informe policial homologado que cumpla con el formato requerido por las autoridades
           </p>
         </div>
-        <div className="lg:max-w-5xl mx-auto">   
-         {typeof window !== 'undefined' && window.localStorage.length > 0   ? <div className="hidden md:block my-2 max-w-sm"><CleanFieldsBtn /></div>: null}
+        <div className="lg:max-w-5xl mx-auto">
+          <div className="flex justify-between items-center">
+          
          {typeof window !== 'undefined' && window.localStorage.length > 0   ? 
-                      <Link  className="py-4 text-center  border text-black text-sm" to="/iph/generador">generador</Link>
+                      <Link  to="/iph/generador"><Button className="bg-slate-800 hover:bg-slate-700 text-white p-6" variant="link">generar documento</Button></Link>
                    : null}
+                   {typeof window !== 'undefined' && window.localStorage.length > 0   ? <div className="hidden md:block my-2 max-w-sm"><CleanFieldsBtn /></div>: null}
+            </div>   
         <MenuBar/>
         </div>
      
@@ -38,6 +42,13 @@ export default function IPHLayout({ children }: SettingsLayoutProps) {
     
       <div className="block lg:max-w-5xl mx-auto !my-24">
       <MenuBar/>
+      <div className="flex justify-between items-center">
+          
+          {typeof window !== 'undefined' && window.localStorage.length > 0   ? 
+                       <Link  to="/iph/generador"><Button className="bg-slate-800 hover:bg-slate-700 text-white p-6" variant="link">generar documento</Button></Link>
+                    : null}
+                    {typeof window !== 'undefined' && window.localStorage.length > 0   ? <div className="hidden md:block my-2 max-w-sm"><CleanFieldsBtn /></div>: null}
+             </div>   
       </div>
      
     </section>
