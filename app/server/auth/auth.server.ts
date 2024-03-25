@@ -1,41 +1,69 @@
 // app/services/auth.server.ts
-import { Authenticator, AuthorizationError } from "remix-auth";
-import { sessionStorage } from "./session.server";
-import { FormStrategy } from "remix-auth-form";
 import { prisma } from "../prisma/prisma.server";
+import { RegisterForm, createUser } from "../user/create-user.server";// 
 import bcrypt from "bcrypt"
-import { User } from "@prisma/client";
-// Create an instance of the authenticator, pass a generic with what
-// strategies will return and will store in the session
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const authenticator = new Authenticator<User>(sessionStorage);
+import { json, createCookieSessionStorage, redirect } from '@remix-run/node'
 
-authenticator.use(
-    new FormStrategy(async ({ form }) => {
-      const email = form.get("email") as string;
-      const password = form.get("password") as string;
-      
-      const user = await prisma.user.findUnique({
-        where:{
-          email:email
-        }
-      })
+// ...
+type LoginForm = {
+  email: string
+  password: string
+}
+const sessionSecret = process.env.SESSION_SECRET
+if (!sessionSecret) {
+  throw new Error('SESSION_SECRET must be set')
+}
 
-      if(!user){
-        throw new AuthorizationError("usuario invalido")
-      }
-     
-      const passwordMatch = bcrypt.compare(password, user.password as string)
+const storage = createCookieSessionStorage({
+  cookie: {
+    name: 'kudos-session',
+    secure: process.env.NODE_ENV === 'production',
+    secrets: [sessionSecret],
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30,
+    httpOnly: true,
+  },
+})
 
-      if(!passwordMatch){
-        throw new AuthorizationError("usuario invalido")
-      }
-      // the type of this user must match the type you pass to the Authenticator
-      // the strategy will automatically inherit the type if you instantiate
-      // directly inside the `use` method
-      return user;
-    }),
-    // each strategy has a name and can be changed to use another one
-    // same strategy multiple times, especially useful for the OAuth2 strategy.
-    "user-pass"
-  );
+export async function register(user: RegisterForm) {
+  const exists = await prisma.user.count({ where: { email: user.email } })
+  if (exists) {
+    return json({ error: `Este correo electrónico ya está asociado con una cuenta.` }, { status: 400 })
+  }
+  const newUser = await createUser(user)
+  if (!newUser) {
+    return json(
+      {
+        error: `Something went wrong trying to create a new user.`,
+        fields: { email: user.email, password: user.password },
+      },
+      { status: 400 },
+    )
+  }
+}
+
+
+export async function createUserSession(userId: string, redirectTo: string) {
+  const session = await storage.getSession()
+  session.set('userId', userId)
+  return redirect(redirectTo, {
+    headers: {
+      'Set-Cookie': await storage.commitSession(session),
+    },
+  })
+}
+
+
+export async function login({ email, password }: LoginForm) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+
+  if (!user || !(await bcrypt.compare(password, user.password)))
+    return json({ error: `Incorrect login` }, { status: 400 });
+
+
+  return createUserSession(user.id, "/");
+}
