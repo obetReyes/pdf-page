@@ -82,7 +82,7 @@ export const SignatureCanvas = ({form}:IphDisposicionPropsI) => {
         <FormControl>
         <canvas
     
-    className="mt-2 w-full !object-contain  !border  rounded !border-slate-300"
+    className="mt-2 w-full h-80 !object-contain  !border  rounded !border-slate-300"
     onMouseDown={(e) => {
       dispatch({
         type:"START DRAWING",

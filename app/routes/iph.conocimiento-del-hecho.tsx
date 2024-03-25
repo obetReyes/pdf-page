@@ -1,9 +1,9 @@
-import IPHLayout from "~/components/iph/iphLayout"
+import { IphLayout } from "../components/iph/iphLayout"
 
 export default function conocimientoHecho () {
 
   return (
-    <IPHLayout>
+    <IphLayout>
       <div className='mb-3'>
         <h3 className="text-lg font-medium">Conocimiento Hecho</h3>
         <p className="text-sm text-muted-foreground">
@@ -14,7 +14,7 @@ export default function conocimientoHecho () {
       <h1>
         hola
       </h1>
-    </IPHLayout>
+    </IphLayout>
   )
 }
 

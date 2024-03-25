@@ -1,60 +1,77 @@
-import { Link } from "@remix-run/react"
-import { CleanFieldsBtn } from "./clean-fields-btn"
-import { MenuBar } from "./menu-bar"
+import {  Link, NavLink } from "@remix-run/react"
+import { iphSections } from "~/constants/iph-sections"
 import { Button } from "../ui/button"
+import { CleanFieldsBtn } from "./clean-fields-btn"
+import { useEffect, useState } from "react"
 
-
-
-interface SettingsLayoutProps {
-  children: React.ReactNode
+interface PROPS{
+    children:JSX.Element | JSX.Element[]
 }
+export const IphLayout = ({children}:PROPS) => {
+    const [isFilled, setIsFilled] = useState<boolean>(false)
+    const [canClean, setCanCLean]  = useState<boolean>(false)
 
-export default function IPHLayout({ children }: SettingsLayoutProps) {
-  return (
-    <>
-     <section className="2xl:w-10/12 h-screen p-4 mx-auto">
-       <div className="space-y-0.5 text-center">
-          <h2 className="text-2xl font-bold tracking-tight">Generar Informe Policial Homologado</h2>
-          <p className="text-muted-foreground">
-            llena  las secciones del  formulario para generar un informe policial homologado que cumpla con el formato requerido por las autoridades
-          </p>
+    useEffect(() => {
+        for (const key in localStorage){
+            if(localStorage.length > 0){
+                setIsFilled(true)
+            }
+            if(localStorage.length > 0){
+                setCanCLean(true)
+            }
+         }
+    },[])
+    
+    return (
+
+    <div className="flex  bg-gray-100">
+
+  
+    <div className="hidden   md:flex flex-col w-64 ">
+        <div className="flex items-center justify-center  bg-slate-900">
+            <span className="text-white scroll-m-20  text-center p-4 text-xl font-semibold tracking-tight uppercase">Informe Policial Homologado</span>
         </div>
-        <div className="lg:max-w-5xl mx-auto">
-          <div className="flex justify-between items-center">
-          
-         {typeof window !== 'undefined' && window.localStorage.length > 0   ? 
-                      <Link  to="/iph/generador"><Button className="bg-slate-800 hover:bg-slate-700 text-white p-6" variant="link">generar documento</Button></Link>
+        <div className="flex flex-col  flex-grow overflow-hidden">
+            <nav className="flex-1 flex flex-col gap-4  px-2 py-4 bg-slate-800">
+                {
+                    iphSections.map((section) => {
+                        return(
+                            <NavLink
+                            className={({ isActive}) =>
+                            `flex items-center px-4 py-2 text-white hover:bg-blue-900  ${isActive && "underline"}`
+                          }
+                             key={section.label} to={section.href}>
+                    
+                           
+                            {section.label}
+                    
+                            </NavLink>
+                        
+                        )
+                    })
+                }
+           
+           {isFilled   ? 
+           <Link to="/iph/generador"  className="flex items-center  text-white bg-slate-900 p-4" >
+                    
+                    generar documento
+   
+           </Link>
+                    
                    : null}
-                   {typeof window !== 'undefined' && window.localStorage.length > 0   ? <div className="hidden md:block my-2 max-w-sm"><CleanFieldsBtn /></div>: null}
-            </div>   
-        <MenuBar/>
+                   
+                   {canClean  ? <CleanFieldsBtn />: null}
+            </nav>
         </div>
-     
-       
+    </div>
+
+    <div className="flex flex-col flex-1">
       
-        
-  
-        
-          <div className="flex-1 mx-auto lg:max-w-5xl">{children}</div>
-          
-        
-
+        <div className="p-4">
+            {children}
+        </div>
+    </div>
     
-      <div className="block lg:max-w-5xl mx-auto !my-24">
-      <MenuBar/>
-      <div className="flex justify-between items-center">
-          
-          {typeof window !== 'undefined' && window.localStorage.length > 0   ? 
-                       <Link  to="/iph/generador"><Button className="bg-slate-800 hover:bg-slate-700 text-white p-6" variant="link">generar documento</Button></Link>
-                    : null}
-                    {typeof window !== 'undefined' && window.localStorage.length > 0   ? <div className="hidden md:block my-2 max-w-sm"><CleanFieldsBtn /></div>: null}
-             </div>   
-      </div>
-     
-    </section>
-    </>
-  
-
-    
+</div>
   )
 }

@@ -1,9 +1,8 @@
-import IPHLayout from "~/components/iph/iphLayout"
-
+import { IphLayout } from "~/components/iph/iphLayout"
 export default function primerRespondiente () {
 
   return (
-    <IPHLayout>
+    <IphLayout>
       <div className='mb-3'>
         <h3 className="text-lg font-medium">Primer Respondiente</h3>
         <p className="text-sm text-muted-foreground">
@@ -12,6 +11,6 @@ export default function primerRespondiente () {
       </div>
       
     
-    </IPHLayout>
+    </IphLayout>
   )
 }

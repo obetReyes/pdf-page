@@ -20,3 +20,4 @@ function useLocalStorage(key: string): [any, (nextState: any) => void] {
 }
 
 export default useLocalStorage;
+

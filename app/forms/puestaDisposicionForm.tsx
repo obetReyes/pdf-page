@@ -66,7 +66,8 @@ useEffect(() => {
       
   return (
     <Form {...form}>
-    <form id="puesta-disposicion" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      
+    <form  id="puesta-disposicion"  method="POST" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 h-full">
     
     <FormField
           control={form.control}
