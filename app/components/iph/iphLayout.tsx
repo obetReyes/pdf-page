@@ -1,12 +1,14 @@
 import {  Link, NavLink } from "@remix-run/react"
 import { iphSections } from "~/constants/iph-sections"
-import { Button } from "../ui/button"
 import { CleanFieldsBtn } from "./clean-fields-btn"
 import { useEffect, useState } from "react"
+
 
 interface PROPS{
     children:JSX.Element | JSX.Element[]
 }
+
+  
 export const IphLayout = ({children}:PROPS) => {
     const [isFilled, setIsFilled] = useState<boolean>(false)
     const [canClean, setCanCLean]  = useState<boolean>(false)
@@ -22,6 +24,7 @@ export const IphLayout = ({children}:PROPS) => {
          }
     },[])
     
+
     return (
 
     <div className="flex  bg-gray-100">
