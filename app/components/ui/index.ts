@@ -13,3 +13,4 @@ export { Toast, } from "./toast";
 export { Toaster } from "./toaster";
 export { useToast } from "./use-toast";
 export { Separator } from "./separator";
+export { Alert,AlertDescription,AlertTitle } from "./alert";

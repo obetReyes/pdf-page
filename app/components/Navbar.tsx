@@ -9,6 +9,7 @@ import {
 
 import { Menu } from "lucide-react";
 import { Link } from "@remix-run/react";
+import { DynamicLinks } from "./dynamic-links";
 interface RouteProps {
   href: string;
   label: string;
@@ -33,6 +34,10 @@ const routeList: RouteProps[] = [
   },
 ];
 
+
+
+
+
 export const Navbar = () => {
   return (
 <header className="sticky inset-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-lg">
@@ -54,10 +59,7 @@ export const Navbar = () => {
         <div className="flex-grow"></div>
         <div className="hidden items-center justify-center gap-6 md:flex">
             <a href="/" className="font-dm text-sm font-medium text-foreground underline">Contacto</a>
-            <Link to="/iph/puesta-a-disposicion"
-                className="rounded-md bg-gradient-to-br bg-foreground px-3 py-1.5 font-dm text-sm font-medium text-white shadow-md transition-transform duration-200 ease-in-out hover:scale-[1.03]">
-                Generar IPH
-            </Link>
+            <DynamicLinks/>
         </div>
         <Sheet>
   <SheetTrigger className="md:hidden"><Menu className="w-6 h-6"/></SheetTrigger>
@@ -77,10 +79,12 @@ export const Navbar = () => {
         </ul>
         <div className="flex flex-col gap-4 mt-8">
         <a href="/" className="font-dm text-sm font-medium text-foreground underline">Contacto</a>
-            <a href="/generariph"
+            <a href="iph/generariph"
                 className="rounded-md bg-gradient-to-br bg-foreground px-3 py-1.5 font-dm text-sm font-medium text-white shadow-md transition-transform duration-200 ease-in-out hover:scale-[1.03]">
                 Generar IPH
             </a>
+            <DynamicLinks/>
+
         </div>
         
   </SheetContent>

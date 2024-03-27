@@ -49,9 +49,9 @@ export async function register(user: RegisterForm) {
 }
 
 
-export async function createUserSession(userId: string, redirectTo: string) {
+export async function createUserSession(id: string, redirectTo: string) {
   const session = await storage.getSession()
-  session.set('userId', userId)
+  session.set('userId', id)
   return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await storage.commitSession(session),
@@ -67,7 +67,7 @@ export async function login({ email, password }: LoginForm) {
 
 
   if (!user || !(await bcrypt.compare(password, user.password)))
-    return json({ error: `Incorrect login` }, { status: 400 });
+    return json({ error: `el usuario no es valido` }, { status: 400 });
 
 
   return createUserSession(user.id, "/");
@@ -79,7 +79,7 @@ export async function requireUserId(request: Request, redirectTo: string = new U
   const userId = session.get('userId')
   if (!userId || typeof userId !== 'string') {
     const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
-    throw redirect(`/login?${searchParams}`)
+    throw redirect(`/ingreso?${searchParams}`)
   }
   return userId
 }
@@ -114,7 +114,7 @@ export async function getUser(request: Request) {
 
 export async function logout(request: Request) {
   const session = await getUserSession(request)
-  return redirect('/login', {
+  return redirect('/ingreso', {
     headers: {
       'Set-Cookie': await storage.destroySession(session),
     },
