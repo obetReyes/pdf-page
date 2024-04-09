@@ -1,12 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons"
-import { ActionFunctionArgs, json } from "@remix-run/node"
-import { Link, useActionData } from "@remix-run/react"
+import { ActionFunctionArgs, LoaderFunction, json, redirect } from "@remix-run/node"
+import { Form, Link, useActionData } from "@remix-run/react"
 import { useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle, Button, Input, Label } from "~/components/ui"
 import { loginSchema } from "~/forms/utils"
 import { cn } from "~/lib/utils"
-import { login } from "~/server/auth/auth.server"
+import { getUser, login } from "~/server/auth/auth.server"
+
+
+export const loader: LoaderFunction = async ({ request }) => {
+  // If there's already a user in the session, redirect to the home page
+  return (await getUser(request)) ? redirect('/iph/puesta-a-disposicion') : null
+}
 
 
 export async function action({
@@ -20,6 +26,7 @@ export async function action({
     const password = userLogin.password;
     if (email.length == 0 && password.length == 0) throw new Error("usuario invalido")
     return await login({  email , password })
+  
   } catch (error) {
     console.error(`form not submitted ${error}`)
     return json({ error });
@@ -110,7 +117,7 @@ export default function Ingreso() {
                 inicia sesion para proceder a generar un IPH
               </p>
             </div>
-                <form  id="puesta-disposicion"  method="POST"  className="space-y-6 h-full">
+                <Form  id="puesta-disposicion"  method="POST"  className="space-y-6 px-6 md:p-0 h-full">
       
   <Label htmlFor="email">Correo Electronico</Label>
   <Input name="email" id="email" type="email"/>
@@ -121,25 +128,7 @@ export default function Ingreso() {
 
       <Button 
    type="submit" className="float-right bg-slate-900 text-white" variant="outline">Iniciar sesion</Button>    
-  </form>
-            <p className="px-8 text-center text-sm text-muted-foreground">
-            Al hacer clic en continuar, aceptas nuestros {" "}
-              <Link
-               to="/"
-                className="underline underline-offset-4 hover:text-primary"
-              >
-                Terminos y condiciones
-              </Link>{" "}
-              y la{" "}
-              <Link
-               to="/p"
-                className="underline underline-offset-4 hover:text-primary"
-              >
-                politica de privacidad
-              </Link>
-              .
-            </p>
-            
+  </Form>
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Loader } from "lucide-react";
 import { IphLayout } from "../components/iph/iphLayout"
-import useLocalStorage from "~/hooks/useLocalStorage";
+import {useLocalStorage} from "~/hooks/";
 import { useEffect, useState } from "react";
 import { Link, useActionData } from "@remix-run/react";
 import { Button, Separator } from "../components/ui";
@@ -10,6 +11,8 @@ import path from "path"
 import { PDFDocument } from "pdf-lib";
 import { IPH } from "~/types/iph-fields";
 import { ActionFunctionArgs } from "@remix-run/node";
+import { v4 as uuidv4 } from 'uuid';
+import { getUser } from "~/server/auth/auth.server";
 const basePath = "/home/obetreyes/Documents/eclipseBusiness";
 
 
@@ -18,11 +21,17 @@ export async function action({
   request,
 }: ActionFunctionArgs) {
   const body = await request.formData();
-  
+  const user = await getUser(request);
   const json = JSON.parse(body.get("json") as string)
   const data:IPH = json 
   const file = path.join(basePath, `pdfs/IPH-DELITOS.pdf`);
   
+  if(!user){
+    throw new Response("el usuario no es valido", {
+      status:403
+    })
+  }
+  console.log("action called post  rpfile")
   try {
     // Leer el archivo PDF existente
     const existingPdfBytes = await fs.promises.readFile(file);
@@ -41,11 +50,12 @@ export async function action({
     const modifiedPdfBytes = await pdfDoc.save();
     modifiedPdfBytes
     // Devolver el PDF modificado como respuesta
-    const outputPath = path.join(basePath, 'pdfs', 'IPH-DELITOS-modificado.pdf');
+    const filename = `${user.id,uuidv4()}`
+    const outputPath = path.join(basePath, 'pdfs', `IPH-DELITOS-${filename}.pdf`);
     fs.writeFileSync(outputPath, modifiedPdfBytes);
 
   
-  return "jols";
+  return filename;
 } catch (error) {
     console.error("Error al procesar el archivo PDF:", error);
     return error;
@@ -53,7 +63,7 @@ export async function action({
 }
 
   export default function Generador () {
-    const isPDFGenerated = useActionData<typeof action>();
+    const PDFdocument = useActionData<typeof action>();
 
     const [saveForm, setSaveForm] = useLocalStorage("/iph/puesta-a-disposicion");
     if(saveForm == null){
@@ -78,14 +88,28 @@ export async function action({
         </div>
         
         <section className="gap-2">
-         
-          <form method="post"  encType="application/json">
-                        <input
-    type="hidden"
-    name="json"
-    value={JSON.stringify(fields)}
-  />
-          <Button
+        
+          {PDFdocument ? 
+        <Link
+          to={`/descargar/${PDFdocument}`}
+          onClick={() => localStorage.clear()}
+          type="submit"
+        className="bg-slate-900 text-gray-100 float-right"
+        reloadDocument
+        >
+          <Button variant="ghost">
+              Descargar IPH
+          </Button>
+        
+        </Link> : 
+        
+        <form method="post"  encType="application/json">
+        <input
+type="hidden"
+name="json"
+value={JSON.stringify(fields)}
+/>
+<Button
           
           type="submit"
         className="bg-slate-900 text-gray-100 float-right"
@@ -93,16 +117,8 @@ export async function action({
         >
          generar PDF
         </Button>
-          </form>
-          {isPDFGenerated ? 
-        <Link
-          to="/descargar/hola"
-          type="submit"
-        className="bg-slate-900 text-gray-100 float-right"
-        reloadDocument
-        >
-         descargarpdf 
-        </Link> : null}
+</form>
+       }
 
         
        

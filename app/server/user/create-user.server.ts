@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { prisma } from '../prisma/prisma.server'
 export type RegisterForm = {
   email: string

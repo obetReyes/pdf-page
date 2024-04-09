@@ -1,23 +1,23 @@
 import { useContext } from "react";
-import { Button } from "../ui/button";
 import { FormContext } from "~/contexts/form/formContext";
+import { Eraser } from "lucide-react";
 
 interface PropsI{
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>
 }
 export const CleanFieldsBtn = ({setOpen}:PropsI) => {
-  const {setFormStorageClean} = useContext(FormContext)
+  const {removeData} = useContext(FormContext);
   
     return (
-      <Button  onClick={() => {
+      <button  onClick={() => {
         if(setOpen){
           setOpen(false)
         }
-       localStorage.clear();
-      setFormStorageClean(true)
-      }} variant="link" className=" w-full mt-2 md:mt-0   text-white bg-red-800 hover:bg-red-700">
+        removeData();
+      }} className=" p-2 mt-2 md:mt-0   text-white bg-red-800 shadow-xl shadow-red-900/50 hover:bg-red-700  flex items-center   rounded  ">
+        <Eraser  className="w-4 h-4 mr-2"/>
       borrar secciones
- </Button>
+ </button>
   )
 }
 

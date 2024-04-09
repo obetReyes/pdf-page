@@ -6,47 +6,79 @@ import { Input } from "~/components/ui/input"
 import { Button } from "~/components/ui/button"
 import { Save, } from "lucide-react"
 import { toast } from "~/components/ui/use-toast"
-import { useContext, useEffect } from "react"
-import useLocalStorage from "~/hooks/useLocalStorage"
-import { SignatureCanvas } from "~/components/signature-canvas"
+import { useContext, useEffect,  } from "react"
 import { ToastAction } from "~/components/ui/toast"
 import { FormContext } from "~/contexts/form/formContext"
-import { initialDisponserValues, disponserFormValues, disponserSchema } from "./utils/puesta-disposicion"
+import {  disponserFormValues, disponserSchema } from "./utils/puesta-disposicion"
+import { SignaturePad } from "~/components/ui/signaturePad"
 
 
+interface Props{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  profileValues?:any
+}
+export const PuestaDisposicionForm = ({profileValues}:Props) => {
+  const { addData, IPHdata} = useContext(FormContext)
 
-
-export const PuestaDisposicionForm = () => {
-  const {clean, setFormStorageClean} = useContext(FormContext)
-  const [saveForm, setSaveForm] = useLocalStorage("/iph/puesta-a-disposicion");
-  
 const form = useForm<disponserFormValues>({
     resolver: zodResolver(disponserSchema),
-    defaultValues:initialDisponserValues,
+    defaultValues:IPHdata.puestaDisposicion,
     mode: "onSubmit",
 });
 
+  useEffect(() => {
+    if(profileValues && profileValues.profile){
+      form.setValue("names", profileValues.profile.names, {
+        shouldDirty:true
+      })
+      form.setValue("fristsurname",profileValues.profile.fristsurname,
+      {
+        shouldDirty:true
 
-useEffect(() => {
-    // Esperar hasta que saveForm tenga un valor válido antes de asignar formStoredData
-    if (saveForm !== null) {
-        form.setValue("assignment",  saveForm.assignment, {shouldDirty:false})
-        form.setValue("fristsurname",  saveForm.fristsurname, {shouldDirty:false})
-        form.setValue("lastsurname",  saveForm.lastsurname, {shouldDirty:false})
-        form.setValue("names",  saveForm.names, {shouldDirty:false})
-        form.setValue("rank",  saveForm.rank,{shouldDirty:false})
-        form.setValue("isSignature",  saveForm.isSignature, {shouldDirty:false})
-        form.setValue("signatureImg",  saveForm.signatureImg, {shouldDirty:false})
-    }
-}, [saveForm]);
-
-     
+      })
+      form.setValue("lastsurname", profileValues.profile.lastsurname,{
+        shouldDirty:true
+      })
+      form.setValue("rank", profileValues.profile.rank,{
+        shouldDirty:true
+      })
+      form.setValue("assignment", profileValues.profile.assignment,{
+        shouldDirty:true
+      })
+      form.setValue("signatureImg", profileValues.profile.signature,{
+        shouldDirty:true
+      })
     
+    }
+      form.setValue("names", IPHdata.puestaDisposicion.names, {
+        shouldDirty:true
+      })
+      form.setValue("fristsurname",IPHdata.puestaDisposicion.fristsurname,
+      {
+        shouldDirty:true
+
+      })
+      form.setValue("lastsurname", IPHdata.puestaDisposicion.lastsurname,{
+        shouldDirty:true
+      })
+      form.setValue("rank", IPHdata.puestaDisposicion.rank,{
+        shouldDirty:true
+      })
+      form.setValue("assignment", IPHdata.puestaDisposicion.assignment,{
+        shouldDirty:true
+      })
+      form.setValue("signatureImg", IPHdata.puestaDisposicion.signatureImg,{
+        shouldDirty:true
+      })
+    
+  }, [profileValues])
+
+ 
+
       const onSubmit: SubmitHandler<disponserFormValues> = async(data) => {
         if (form.getValues("signatureImg")) {
-          console.log("signatureImg", form.getValues("signatureImg"))
-
-          setSaveForm({...data, signatureImg:form.getValues("signatureImg")});  
+          
+          addData("puestaDisposicion", {...data, signatureImg:form.getValues("signatureImg")}); 
           toast({
             title: "El formulario se ha guardado con exito.",
             description: "no  borres el almacenamiento local si aun no terminas el IPH",
@@ -56,14 +88,9 @@ useEffect(() => {
         form.reset({}, { keepValues: true, keepDirtyValues:false });
       }
         
+  
 
-      useEffect(() => {
-        if(clean == true){
-          form.reset()
-          setFormStorageClean(false)
-        }
-      }, [clean])
-      
+
   return (
     <Form {...form}>
       
@@ -136,12 +163,12 @@ useEffect(() => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        />  
 
-<SignatureCanvas form={form} />
-       
+      <SignaturePad form={form}/>
             <Button 
-            disabled={Object.keys(form.formState.dirtyFields).length == 0} type="submit" className="float-right bg-cyan-900 text-white" variant="outline"><Save className="w-4 h-4 mr-2" /> Guardar sección</Button>    
+           type="submit"   disabled={!form.formState.isDirty || form.watch("signatureImg") == ""}  className="float-right bg-cyan-900 text-white" variant="outline"  // Disable the button if the form is not dirty
+           ><Save className="w-4 h-4 mr-2" /> Guardar sección</Button>    
     </form>
            
 

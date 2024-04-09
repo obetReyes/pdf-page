@@ -1,5 +1,5 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "app/components/contexts/canvas.provider.tsx"],
+  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "app/components/contexts/canvas.provider.tsx", "app/components/ui/signaturePad.tsx"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "isolatedModules": true,

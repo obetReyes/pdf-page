@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 
-function useLocalStorage(key: string): [any, (nextState: any) => void] {
+export function useLocalStorage(key: string): [any, (nextState: any) => void] {
   const [state, setState] = useState<any>(null);
 
   useEffect(() => {
@@ -18,6 +18,4 @@ function useLocalStorage(key: string): [any, (nextState: any) => void] {
 
   return [state, setWithLocalStorage];
 }
-
-export default useLocalStorage;
 

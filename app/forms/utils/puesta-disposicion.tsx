@@ -1,4 +1,5 @@
 import {z} from "zod";
+
 export const disponserSchema = z.object({
     names: z
       .string().trim()
@@ -24,21 +25,12 @@ export const disponserSchema = z.object({
     rank:z.string().trim().min(5, {
       message:"el rango no puede tener menos de 5 caracteres"
     }).max(150,{message:"el rango no puede tener mas de 150 caracteres"}),
-    isSignature:z.boolean().refine(value => value === true, {
-      message: 'la firma no es valida.'
-  }),
-    signatureImg: z.string().optional(),
+    signatureImg: z.string().min(1, {
+      message:"la firma no es valida"
+    }),
   })
 
-export const initialDisponserValues = {
-       assignment:"",
-      fristsurname:"",
-      lastsurname:"",
-      names:"",
-      rank:"",
-      isSignature:false,
-      signatureImg:""
-}
+
 
 export type disponserFormValues = z.infer<typeof disponserSchema>
 

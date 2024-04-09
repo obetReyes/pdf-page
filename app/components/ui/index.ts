@@ -14,3 +14,8 @@ export { Toaster } from "./toaster";
 export { useToast } from "./use-toast";
 export { Separator } from "./separator";
 export { Alert,AlertDescription,AlertTitle } from "./alert";
+export  {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "./table"
+export {DropdownMenu,DropdownMenuCheckboxItem,DropdownMenuContent,DropdownMenuLabel,DropdownMenuItem,DropdownMenuSeparator,DropdownMenuTrigger} from "./dropdown-menu"
+export { Checkbox } from "@radix-ui/react-checkbox";
+export { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger } from "./dialog";
+

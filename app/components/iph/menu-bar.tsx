@@ -1,9 +1,7 @@
-"use client"
-
 import * as React from "react"
-import { Link} from "@remix-run/react"
-import { useMediaQuery } from "~/hooks/useMediaQuery"
-import { Slash } from "lucide-react"
+import { Link, NavLink} from "@remix-run/react"
+import { useMediaQuery, useCheckLocalStorage } from "~/hooks"
+import { Slash, MenuIcon, Pickaxe } from "lucide-react"
 import {
   Drawer,
   DrawerClose,
@@ -16,7 +14,6 @@ import {
 } from "../ui/drawer"
 import {
   Breadcrumb,
-  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
@@ -24,40 +21,16 @@ import {
 } from "../ui/breadcrumb"
 import { Button } from "../ui/button"
 import { CleanFieldsBtn } from "./clean-fields-btn"
-
-const iphSections = [
-    {
-       label: "puesta  a disposicion",
-        href: "/iph/puesta-a-disposicion",
-      },
-      {
-       label: "primer respondiente",
-        href: "/iph/primer-respondiente",
-      },
-      {
-       label: "conocimiento del hecho",
-        href: "/iph/conocimiento-del-hecho",
-      },
-      {
-       label: "lugar de la intervencion",
-        href: "/iph/lugar-intervencion",
-      },
-      {
-       label: "narrativa de los hechos",
-        href: "/iph/narrativa-hechos",
-      },
-      {
-       label: "anexos",
-        href: "/iph/anexos",
-      },
-]
+import { iphSections } from "~/constants/iph-sections"
 
 export function MenuBar() {
   const [open, setOpen] = React.useState(false)
+  const {isFilled, canClean} = useCheckLocalStorage(0)
+    
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
   return (
-    <Breadcrumb className="my-4 bg-blue-700 p-3 ">
+    <Breadcrumb className="my-4  w-full p-3 md:hidden">
       <BreadcrumbList>
             
 
@@ -67,11 +40,11 @@ export function MenuBar() {
               {isDesktop ? (
                
                
-               <>
+               <div>
                  {iphSections.map((item, index) => (
           <BreadcrumbItem key={index}>
             {item.href && (
-              <>
+              <li>
                 <BreadcrumbLink
                   asChild
                   className="max-w-20  md:max-w-none"
@@ -81,54 +54,57 @@ export function MenuBar() {
                 <BreadcrumbSeparator>
       <Slash />
     </BreadcrumbSeparator>
-              </>
+              </li>
             )}
           </BreadcrumbItem>
         ))}
-               </>
+               </div>
               ) : (
                 <>
                 <Drawer open={open} onOpenChange={setOpen}>
-                  <DrawerTrigger aria-label="Toggle Menu" className="flex  gap-2">
-                  <>
-                    {iphSections.slice(0,2).map((item) => {
-                        return(
-                            <BreadcrumbItem  key={item.label}>
-                            <BreadcrumbLink  href={item.href}>
-                                {item.label}
-                            </BreadcrumbLink>
-                            </BreadcrumbItem>
-                        )
-                   
-                })}
-                    </>
-                    <BreadcrumbEllipsis className="h-4 w-4"/>
+                  <DrawerTrigger aria-label="Toggle Menu" className="flex    gap-2 text-black !text-center !mx-auto rounded items-center   w-96 p-2 ">
+                
+                    <p className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">secciones del iph</p>
+                    <MenuIcon className="bg-white border border-black  !text-center  !mx-auto shadow-md ml-4 h-8 w-8"/>
 
                     
                     
                   </DrawerTrigger>
-                  <DrawerContent className="bg-blue-900">
-                    <DrawerHeader className="text-left text-white">
+                  <DrawerContent >
+                    <DrawerHeader className="text-left text-black">
                       <DrawerTitle>Seleccionar Sección</DrawerTitle>
                       <DrawerDescription>
                         Elige la Seccion del IPH
                       </DrawerDescription>
                     </DrawerHeader>
                     <div className="grid gap-1 px-4 ">
-                      {iphSections.slice(2).map((item, index) => (
-                        <Link
-                          key={index}
-                          to={item.href ? item.href : "#"}
-                          className="py-4 text-center  border text-white text-sm"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                      {typeof window !== 'undefined' && window.localStorage.length > 0   ? <CleanFieldsBtn setOpen={setOpen} />: null}
-                          
-                      {typeof window !== 'undefined' && window.localStorage.length > 0   ? 
-                      <Link  className="py-4 text-center  border text-white text-sm" to="/iph/generador">generador</Link>
+                    {
+                    iphSections.map((section) => {
+                        return(
+                            <NavLink
+                            className={({ isActive}) =>
+                            `flex  items-center px-4 py-2  hover:bg-slate-400 drop-shadow-2xl  ${isActive && "underline bg-slate-400 shadow-md shadow-slate-600/50 "}`
+                          }
+                             key={section.label} to={section.href}>
+                            
+                    {section.icon}
+                            {section.label}
+                    
+                            </NavLink>
+                        
+                        )
+                    })
+                }
+           
+                       {isFilled   ? 
+           <Link to="/iph/generador"  className="mt-4 flex items-center  text-white bg-slate-700 shadow-slate-800/50 rounded shadow-xl p-2" >
+                    <Pickaxe  className="w-4 h-4 mr-2" />
+                    generar documento
+           </Link>
+                    
                    : null}
+                   
+                   {canClean  ? <CleanFieldsBtn />: null}
                           
                     </div>
                     <DrawerFooter className="pt-4">

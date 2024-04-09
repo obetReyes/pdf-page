@@ -1,7 +1,7 @@
 // app/services/auth.server.ts
 import { prisma } from "../prisma/prisma.server";
 import { RegisterForm, createUser } from "../user/create-user.server";// 
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import { json, createCookieSessionStorage, redirect } from '@remix-run/node'
 
 // ...
@@ -22,7 +22,7 @@ const storage = createCookieSessionStorage({
     secrets: [sessionSecret],
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: undefined,
     httpOnly: true,
   },
 })
@@ -46,12 +46,17 @@ export async function register(user: RegisterForm) {
       { status: 400 }
     );
   }
+
+  return redirect("/ingreso")
+
 }
 
 
 export async function createUserSession(id: string, redirectTo: string) {
   const session = await storage.getSession()
   session.set('userId', id)
+ 
+  
   return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await storage.commitSession(session),
@@ -66,23 +71,52 @@ export async function login({ email, password }: LoginForm) {
   });
 
 
+
   if (!user || !(await bcrypt.compare(password, user.password)))
     return json({ error: `el usuario no es valido` }, { status: 400 });
 
 
-  return createUserSession(user.id, "/");
+  if(user.fristlogin == null || user.fristlogin == false){
+      await prisma.user.update({
+        where:{
+          id:user.id
+        },
+        data:{
+          fristlogin:true
+        }
+      })
+      return createUserSession(user.id, "/crear-perfil");
+  }
+  return createUserSession(user.id, "/iph/panel");
 }
 
 
 export async function requireUserId(request: Request, redirectTo: string = new URL(request.url).pathname) {
   const session = await getUserSession(request)
+  
   const userId = session.get('userId')
+  const url = new URL(request.url);
+
   if (!userId || typeof userId !== 'string') {
     const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
     throw redirect(`/ingreso?${searchParams}`)
   }
-  return userId
+  if(!url.pathname.includes("perfil")){
+
+  const isProfile = await prisma.profile.findUnique({
+    where:{
+      userId:userId
+    }
+  })
+  
+  if(userId && typeof userId == 'string' && isProfile == null  ){
+    const searchParams = new URLSearchParams([['redirectTo', redirectTo]])
+    throw redirect(`/crear-perfil?${searchParams}`)
+  }
+    }
+    return userId
 }
+
 
 function getUserSession(request: Request) {
   return storage.getSession(request.headers.get('Cookie'))

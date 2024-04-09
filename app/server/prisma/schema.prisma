@@ -21,11 +21,14 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  fristlogin Boolean?
+  profile Profile?
+  reports Report[]
 }
 
-model User_profile{
+model Profile{
     id   String @id @default(uuid())
-    fristname String
+    names String
     fristsurname String
     lastsurname String
     assignment String 
@@ -33,8 +36,11 @@ model User_profile{
     signature String
     institution String
     institutionstate String
-    insitutionmunicipality String
+    institutionmunicipality String
+    userId String @unique
+    user User @relation(fields: [userId], references: [id], onDelete:Cascade)
 }
+
 
 model Password_reset_tokens{
     id  Int     @id @default(autoincrement())
@@ -44,9 +50,11 @@ model Password_reset_tokens{
 } 
 
 
-model Police_Report{
+model Report{
     id  Int     @id @default(autoincrement())
     url String
-  createdAt DateTime @default(now())
+    createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    userId String @unique
+    user User @relation(fields:[userId], references: [id])
 } 

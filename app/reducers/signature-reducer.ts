@@ -1,4 +1,5 @@
-import { SIGNATURE_STATE } from "~/components/signature-canvas"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { SIGNATURE_STATE } from "~/hooks/useSignaturePad"
 type prepareCanvas = {
     type:"PREPARE CANVAS"
     payload: void
@@ -46,11 +47,12 @@ export function signatureReducer(state:SIGNATURE_STATE, action:draw | clearCanva
     }
   }
   
-export function prepareCanvas(state:SIGNATURE_STATE, canvasRef:React.RefObject<HTMLCanvasElement>, contextRef: React.MutableRefObject<CanvasRenderingContext2D | null>
+export function prepareCanvas(state:SIGNATURE_STATE, canvasRef:React.RefObject<HTMLCanvasElement>, contextRef: React.MutableRefObject<CanvasRenderingContext2D | null>, signaturePath?: string, 
   ){
     const canvas = canvasRef.current;
-    const signatureSaved = localStorage.getItem("/iph/puesta-a-disposicion");
+
     
+
     if (canvas) {
       const rect = canvas.parentElement?.getBoundingClientRect(); // Obtener el tamaño del contenedor
       if (rect) {
@@ -68,22 +70,24 @@ export function prepareCanvas(state:SIGNATURE_STATE, canvasRef:React.RefObject<H
           context.strokeStyle = "black";
           context.lineWidth = 0.5;
           contextRef.current = context;
-  
-          if(signatureSaved){
-            const SignatureSavedParsed = JSON.parse(signatureSaved);
+   
+         
+          if(signaturePath){
             const image = new Image();
-            image.src =  SignatureSavedParsed.signatureImg;
+            image.src =  signaturePath;
             image.onload = () => {
               state.isImgLoaded = true
               if(context)
             context.drawImage(image, 0, 0, canvas.width, canvas.height);
-          };   
+            
           }
+            }
           
         }
        
       }
-}
+      }
+
 
 export const startDrawing = (state:SIGNATURE_STATE, canvasRef:React.RefObject<HTMLCanvasElement>, contextRef: React.MutableRefObject<CanvasRenderingContext2D | null>, event: React.MouseEvent<HTMLCanvasElement>) => {
   const { offsetX, offsetY } = event.nativeEvent;

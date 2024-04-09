@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { LoaderFunctionArgs} from "@remix-run/node";
-import { PDFDocument } from "pdf-lib";
 import path from "path"
 import fs from "fs"
 
@@ -13,7 +12,7 @@ export async function loader({
   }: LoaderFunctionArgs) {
   
     const { filename } = params;
-    const file = path.join(basePath, `pdfs/IPH-DELITOS-modificado.pdf`);
+    const file = path.join(basePath, `pdfs/IPH-DELITOS-${filename}.pdf`);
     
     if (!fs.existsSync(file)) {
         return new Response("File not found", { status: 404 });
@@ -29,7 +28,7 @@ export async function loader({
         return new Response(existingPdfBytes, {
             headers: {
                 "Content-Type": "application/pdf",
-                "Content-Disposition": `attachment;filename=${filename}.pdf`
+                "Content-Disposition": `attachment;filename=IPH-DELITOS${filename}.pdf`
             }
         });
     } catch (error) {
